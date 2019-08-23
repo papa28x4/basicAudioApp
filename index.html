@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Audio Player</title>
+    <style>
+    .trackbar{
+        background: #DDD;
+        height: 50px;
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    }
+    .trackbar:nth-child(even){
+        background: #eee;
+    }
+    
+    .playbutton{
+        opacity: 0.8;
+        display: block;
+        float: left;
+        width: 23px;
+        height: 23px;
+        margin: 14px 0px 0px 14px;
+        background: url('images/play1.png') no-repeat;
+        background-position: center;
+        background-size: cover;
+        border: none;
+        cursor: pointer;
+        outline: none;
+    }
+    .playing{
+        background: url('images/pause1.png') no-repeat;
+        background-position: center;
+        background-size: cover;
+    }
+    .playbutton:hover{
+        opacity: 1;
+    }
+    .trackname{
+        float: left;
+        color: #000;
+        margin: 12px 0px 0px 14px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+    
+    </style>
+</head>
+<body>
+    <div id="trackbox">
+           
+    </div>
+
+ 
+<script>
+
+let playlist = [ 'Aku.mp3',
+  'Chioma.mp3',
+  'hero.mp3',
+  'Stood in the gap.mp3',
+  'THIS GOD IS TOO GOOD OH.mp3',
+  'No Longer Slaves.mp3',
+  'Excess Love Remix.mp3' ]
+
+  let playlist2 = [ 'Aanu mbe.mp3',
+  'Alujanjankijan.mp3',
+  'Ebe.mp3',
+  'Gbojule.mp3',
+  'Ife Bi Eji Owuro .mp3',
+  'Olododo.mp3',
+  'Wa wo le.mp3',
+  'Yoo da.mp3' ]
+
+  let collection = []
+  let list = []
+  const generateAttr =(fileList)=>{
+    const path = "audio/"
+      let c = [];
+    for(i=0; i<fileList.length; i++){
+        c = fileList[i].split('.')
+        list.push(c[0])       
+    }
+    for(let j=0; j<list.length; j++){
+            let arr = []
+            list[j].split(' ').forEach((item, index)=>{
+            
+            arr.push(item.toLowerCase().replace(/./, item.charAt(0).toUpperCase()))   
+         })
+            collection[j] = {};
+            collection[j].fileName = path + fileList[j]
+            collection[j].id = arr.join('_')
+            collection[j].title = arr.join(' ')
+    }    
+}
+
+   const audioApp =()=>{
+
+       generateAttr(playlist2)
+
+       const trackbox = document.querySelector('#trackbox')
+       let audio = document.createElement('audio')
+       let isPlaying = false;
+       let currentlyPlaying;
+       
+       for(let i=0; i<collection.length; i++){
+        trackbox.innerHTML +=  `<div class="trackbar"><button class="playbutton" id=${collection[i].id}></button><div class="trackname">${i+1}. ${collection[i].title}</div></div>`
+        }
+        trackbox.addEventListener('click', (event)=>{
+            if(event.target.classList.contains("playbutton")){
+                
+                switchTrack(event);
+            }
+        })
+        audio.addEventListener("ended",()=>{
+            document.querySelector(`#${currentlyPlaying}`).classList.remove('playing');
+            currentlyPlaying = ""
+            isPlaying = false;
+       })
+
+       const play =()=>{
+            for(let i=0; i<collection.length; i++){
+                    if(Object.values(collection[i]).includes(event.target.id)){
+                        audio.src = collection[i].fileName;
+                        audio.play();
+                        event.target.classList.add('playing')
+                        isPlaying = true;
+                        currentlyPlaying = event.target.id;
+                    }
+                }
+       }
+       const switchTrack =(event)=>{
+           
+           if(isPlaying){
+               
+               if(event.target.classList.contains('playing')){
+                    event.target.classList.remove('playing')
+                    audio.pause()
+                    isPlaying = false;
+                }else{
+                    audio.pause();          
+                    document.querySelector(`#${currentlyPlaying}`).classList.remove('playing');
+                    play();
+            }
+        }else{
+                play();   
+            }
+       }
+  }
+
+   window.addEventListener("load", audioApp)
+
+    </script>
+</body>
+</html>
